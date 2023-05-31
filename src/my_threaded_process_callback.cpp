@@ -2,9 +2,10 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "stdafx.h"
+
 #include <process.h>
-#include "../SDK/foobar2000.h"
-//#include "../helpers/helpers.h"
+
 #include "my_threaded_process_callback.h"
 #include "my_titleformat_hook.h"
 #include "config.h"
@@ -202,7 +203,7 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 			this_->m_status->set_progress(this_->m_cur_progress_bar, this_->m_max_progress_bar);
 		}
 	}
-	catch (const foobar2000_io::exception_aborted & e)	{
+	catch (const foobar2000_io::exception_aborted /*& e*/)	{
 
 	}
 	catch (const std::exception & e)	{
@@ -217,7 +218,3 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 
 	return exit_code;
 }
-
-
-
-

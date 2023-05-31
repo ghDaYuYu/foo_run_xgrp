@@ -2,8 +2,8 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../SDK/foobar2000.h"
-#include "../helpers/helpers.h"
+#include "stdafx.h"
+
 #include "foo_run_group.h"
 #include "config.h"
 #include "my_threaded_process_callback.h"
@@ -54,7 +54,7 @@ void contextmenu_item_foo_run_group::item_execute_simple(unsigned p_index, const
 	for (t_size i = 0, count = cfg_service_properties.get_count(); i < count; i++)
 	{
 		if (p_node == cfg_service_properties[i].service_guid)
-			g_context_command(i, p_data, p_caller);
+			g_context_command(static_cast<unsigned int>(i), p_data, p_caller);
 	}
 }
 
@@ -121,7 +121,7 @@ void contextmenu_item_foo_run_group::g_context_command(unsigned p_index, metadb_
 	service_ptr_t<threaded_process_callback_foo_run_group> p_callback = new service_impl_t<threaded_process_callback_foo_run_group>(p_index);
 	p_callback->init();
 
-	for (unsigned i = 0, j = input_files.get_count(); i < j; i++)
+	for (t_size i = 0, j = input_files.get_count(); i < j; i++)
 	{
 		metadb_handle_ptr ptr = input_files[i];
 		if (!ptr->format_title(NULL, temp_album, p_script, NULL)) continue;
@@ -152,8 +152,10 @@ void contextmenu_item_foo_run_group::g_get_item_name(unsigned p_index, pfc::stri
 	p_out = item_name[p_index];
 }
 
-const char* const contextmenu_item_foo_run_group::item_name[] = { "Run services per group" };
-const GUID contextmenu_item_foo_run_group::item_guid[] = { 0xcb819055, 0x5e77, 0x4c1b, { 0xb0, 0xe8, 0xb3, 0x61, 0xab, 0x57, 0x91, 0x9f } };
+const char* const contextmenu_item_foo_run_group::item_name[] = { "Run services x group" };
+// {E88A49E2-9392-4B12-9B53-3924B9A56990}
+const GUID contextmenu_item_foo_run_group::item_guid[] = { 0xe88a49e2, 0x9392, 0x4b12, { 0x9b, 0x53, 0x39, 0x24, 0xb9, 0xa5, 0x69, 0x90 } }; //1.0.5
+
 pfc::string8 contextmenu_item_foo_run_group::fb2k_path("");
 
 //Root Popup
@@ -176,7 +178,7 @@ t_size contextmenu_item_node_root_popup_foo_run_group::get_children_count()
 
 contextmenu_item_node * contextmenu_item_node_root_popup_foo_run_group::get_child(t_size p_index)
 {
-	return new contextmenu_item_node_leaf_foo_run_group(p_index);
+	return new contextmenu_item_node_leaf_foo_run_group(static_cast<unsigned int>(p_index));
 }
 
 GUID contextmenu_item_node_root_popup_foo_run_group::get_guid()
@@ -227,15 +229,3 @@ bool contextmenu_item_node_leaf_foo_run_group::is_mappable_shortcut()
 
 //factory
 static contextmenu_item_factory_t<contextmenu_item_foo_run_group> g_contextmenu_item_foo_run_group_factory;
-
-
-// version info
-DECLARE_COMPONENT_VERSION("Run services per group",
-"1.04",
-"Executes external applications per group\n"
-"\n"
-"inspired by Run services (foo_run.dll) developed by Florian"
-)
-
-// This will prevent users from renaming your component around (important for proper troubleshooter behaviors) or loading multiple instances of it.
-VALIDATE_COMPONENT_FILENAME("foo_run_group.dll");

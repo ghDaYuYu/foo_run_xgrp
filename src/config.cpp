@@ -2,18 +2,18 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../SDK/foobar2000.h"
-#include "../helpers/helpers.h"
+#include "stdafx.h"
+
+#include "../../libPPUI/listview_helper.h"
 #include "resource.h"
 #include "config.h"
 
-
-// {9A435278-1E18-4730-BD04-A5400588987D}
+// {09E7539C-F52D-4B2F-B96F-CF0C464FAA68}
 static const GUID guid_preferences_page_foo_run_group =
-{ 0x9a435278, 0x1e18, 0x4730, { 0xbd, 0x4, 0xa5, 0x40, 0x5, 0x88, 0x98, 0x7d } };
-// {0C1F8C9C-2679-409e-928F-A80D35D89A93}
+{ 0x9e7539c, 0xf52d, 0x4b2f, { 0xb9, 0x6f, 0xcf, 0xc, 0x46, 0x4f, 0xaa, 0x68 } }; //1.0.5
+// {95D75E47-EA6B-4DFF-8908-A126516552BF}
 static const GUID guid_cfg_service_properties =
-{ 0xc1f8c9c, 0x2679, 0x409e, { 0x92, 0x8f, 0xa8, 0xd, 0x35, 0xd8, 0x9a, 0x93 } };
+{ 0x95d75e47, 0xea6b, 0x4dff, { 0x89, 0x8, 0xa1, 0x26, 0x51, 0x65, 0x52, 0xbf } }; //1.0.5
 
 cfg_service_properties_list cfg_service_properties(guid_cfg_service_properties);
 
@@ -21,7 +21,7 @@ cfg_service_properties_list cfg_service_properties(guid_cfg_service_properties);
 class preferences_page_foo_run_group : public preferences_page_v2
 {
 public:
-	static BOOL CALLBACK dialog_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
+	static INT_PTR WINAPI CALLBACK dialog_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 	virtual HWND create(HWND parent)
 	{
@@ -169,7 +169,7 @@ void preferences_page_foo_run_group::enable_move_button(HWND hwnd)
 	}
 }
 
-BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR WINAPI CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
 	{
@@ -191,10 +191,10 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 		listview_helper::insert_column(h, 0, "Services", 245);
 		for (t_size i = 0, max = cfg_service_properties.get_count(); i < max; i++)
 		{
-			listview_helper::insert_item(h, i, cfg_service_properties[i].label, 0);
+			listview_helper::insert_item(h, static_cast<unsigned int>(i), cfg_service_properties[i].label, 0);
 		}
 
-		// ŠÔˆá‚¦‚Ä•ÒW‚µ‚»‚¤‚É‚È‚é‚±‚Æ‚ª‚ ‚Á‚½‚Ì‚Å
+		// ï¿½Ôˆá‚¦ï¿½Ä•ÒWï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É‚È‚é‚±ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½
 		//if (ListView_GetItemCount(h) > 0)
 			//listview_helper::select_single_item(h, 0);
 		//else
@@ -217,8 +217,8 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 				
 				HWND h = uGetDlgItem(hwnd, IDC_SERVICES_LIST);
 				t_size index = cfg_service_properties.get_count() - 1;
-				listview_helper::insert_item(h, index, cfg_service_properties[index].label, 0);
-				listview_helper::select_single_item(h, index);
+				listview_helper::insert_item(h, static_cast<unsigned int>(index), cfg_service_properties[index].label, 0);
+				listview_helper::select_single_item(h, static_cast<unsigned int>(index));
 				//EnableWindow(GetDlgItem(hwnd, IDC_REMOVE_SERVICE), TRUE);
 			}
 			break;
@@ -292,7 +292,7 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 			{
 				if (-1 != cur_service_index)
 				{
-					cfg_service_properties[cur_service_index].label = string_utf8_from_window(hwnd, IDC_LABEL);
+					cfg_service_properties[cur_service_index].label = uGetDlgItemText(hwnd, IDC_LABEL);
 					listview_helper::set_item_text(GetDlgItem(hwnd, IDC_SERVICES_LIST), cur_service_index, 0, cfg_service_properties[cur_service_index].label);
 				}
 			}
@@ -304,7 +304,7 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 			{
 				if (-1 != cur_service_index)
 				{
-					cfg_service_properties[cur_service_index].path = string_utf8_from_window(hwnd, IDC_PATH);
+					cfg_service_properties[cur_service_index].path = uGetDlgItemText(hwnd, IDC_PATH);
 				}
 			}
 			break;
@@ -369,7 +369,7 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 			{
 				if (-1 != cur_service_index)
 				{
-					cfg_service_properties[cur_service_index].album_grouping_pattern = string_utf8_from_window(hwnd, IDC_ALBUM_GROUPING_PATTERN);
+					cfg_service_properties[cur_service_index].album_grouping_pattern = uGetDlgItemText(hwnd, IDC_ALBUM_GROUPING_PATTERN);
 				}
 			}
 			break;
@@ -380,7 +380,7 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 			{
 				if (-1 != cur_service_index)
 				{
-					cfg_service_properties[cur_service_index].filter = string_utf8_from_window(hwnd, IDC_FILTER);
+					cfg_service_properties[cur_service_index].filter = uGetDlgItemText(hwnd, IDC_FILTER);
 				}
 			}
 			break;
@@ -410,7 +410,7 @@ BOOL CALLBACK preferences_page_foo_run_group::dialog_proc(HWND hwnd, UINT msg, W
 				LPNMUPDOWN lpnmud = (LPNMUPDOWN)lp;
 				if (lpnmud->hdr.code == UDN_DELTAPOS)
 				{
-					int thread_count = uSendDlgItemMessage(hwnd, IDC_THREAD_COUNT_SPIN, UDM_GETPOS, 0, 0);
+					t_uint32 thread_count = static_cast<t_uint32>(uSendDlgItemMessage(hwnd, IDC_THREAD_COUNT_SPIN, UDM_GETPOS, 0, 0));
 					if (lpnmud->iDelta > 0)
 					{
 						if (thread_count < service_properties::max_thread_count)

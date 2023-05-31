@@ -2,7 +2,8 @@
 * License, v. 2.0. If a copy of the MPL was not distributed with this
 * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "../SDK/foobar2000.h"
+#include "stdafx.h"
+
 #include "my_titleformat_hook.h"
 
 title_format_hook_foo_run_group::title_format_hook_foo_run_group(metadb_handle_list_cref p_data, t_size group_index) :
