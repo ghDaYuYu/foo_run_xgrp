@@ -6,7 +6,6 @@
 
 #include "my_cfg_var.h"
 
-
 //struct service_properties
 const GUID			service_properties::default_service_guid = pfc::guid_null;
 const char* const	service_properties::default_label = "New Service";

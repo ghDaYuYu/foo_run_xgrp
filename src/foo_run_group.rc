@@ -1,0 +1,105 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#ifndef IDC_STATIC
+#define IDC_STATIC -1
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_PREF_PAGE DIALOGEX 0, 0, 338, 289
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_TRANSPARENT
+FONT 8, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    LTEXT           "Services",IDC_SERVICE_LIST_HEADER,0,2,221,12
+    PUSHBUTTON      "New",IDC_NEW_SERVICE,230,2,43,15
+    PUSHBUTTON      "Remove",IDC_REMOVE_SERVICE,275,2,43,15
+    CONTROL         "",IDC_SERVICES_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | WS_TABSTOP,12,19,306,109,WS_EX_STATICEDGE
+    LTEXT           "Service details",IDC_SERVICE_DETAILS_HEADER,0,132,330,12
+    LTEXT           "Label:",IDC_STATIC,12,152,20,15
+    EDITTEXT        IDC_LABEL,34,150,284,15,ES_AUTOHSCROLL
+    LTEXT           "Path:",IDC_STATIC,12,172,20,15
+    EDITTEXT        IDC_PATH,34,170,271,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BROWSE_PATH,308,170,11,15
+    LTEXT           "Note: %path_group% and %group_index% can be useful in the command line.",IDC_STATIC,35,187,252,12,WS_DISABLED
+    LTEXT           "Album grouping pattern:",IDC_STATIC,12,206,80,13
+    EDITTEXT        IDC_ALBUM_GROUPING_PATTERN,90,204,228,15,ES_AUTOHSCROLL
+    LTEXT           "Filter query syntax:",IDC_STATIC,12,226,70,13
+    EDITTEXT        IDC_FILTER,90,223,228,15,ES_AUTOHSCROLL
+    LTEXT           "Max. threads (0 = auto):",IDC_STATIC,12,259,78,15
+    EDITTEXT        IDC_THREAD_COUNT_EDIT,90,257,19,15,ES_CENTER | ES_AUTOHSCROLL | ES_NUMBER,WS_EX_TRANSPARENT
+    CONTROL         "",IDC_THREAD_COUNT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,110,255,16,19
+    CONTROL         "Minimize window",IDC_MINIMIZE_WINDOW,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,196,243,98,15
+    CONTROL         "Wait process",IDC_WAIT_PROCESS,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,196,256,98,15
+    CONTROL         "Reload info when finished",IDC_RELOAD_INFO,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,196,269,98,15
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#ifndef IDC_STATIC\r\n"
+    "#define IDC_STATIC -1\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

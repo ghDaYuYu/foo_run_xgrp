@@ -8,7 +8,7 @@
 
 #include "my_threaded_process_callback.h"
 #include "my_titleformat_hook.h"
-#include "config.h"
+#include "preferences.h"
 
 threaded_process_callback_foo_run_group::threaded_process_callback_foo_run_group(t_size service_index) :
 m_service_index(service_index),
@@ -31,7 +31,7 @@ void threaded_process_callback_foo_run_group::add_input_files(metadb_handle_list
 
 void threaded_process_callback_foo_run_group::run(threaded_process_status & p_status, abort_callback & p_abort)
 {
-	if (cfg_service_properties[m_service_index].path.is_empty())
+	if (g_cfg_service_properties[m_service_index].path.is_empty())
 	{
 		m_popup_message += "Commandline is empty.\n";
 		return;
@@ -49,7 +49,7 @@ void threaded_process_callback_foo_run_group::run(threaded_process_status & p_st
 	m_abort = &p_abort;
 	m_status = &p_status;
 
-	t_uint32 thread_count = cfg_service_properties[m_service_index].thread_count;
+	t_uint32 thread_count = g_cfg_service_properties[m_service_index].thread_count;
 	if (thread_count == 0)
 		thread_count = pfc::getOptimalWorkerThreadCountEx(service_properties::max_thread_count);
 	
@@ -108,14 +108,14 @@ public:
 
 void threaded_process_callback_foo_run_group::on_done(HWND p_wnd, bool p_was_aborted)
 {
-	if (cfg_service_properties[m_service_index].reload_info && cfg_service_properties[m_service_index].wait_process)
+	if (g_cfg_service_properties[m_service_index].reload_info && g_cfg_service_properties[m_service_index].wait_process)
 	{
 		//Legal to call from main thread only
 		main_thread_callback_spawn<main_thread_callback_foo_run_group, std::shared_ptr<pfc::list_t<metadb_handle_list>>>(m_input_files);
 	}
 
 	if (!m_popup_message.is_empty())
-		popup_message::g_show(m_popup_message, "Run services per group");
+		popup_message::g_show(m_popup_message, PLUGIN_NAME);
 }
 
 unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
@@ -125,7 +125,7 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 
 	try	{
 		service_ptr_t<titleformat_object> p_script;
-		if (!static_api_ptr_t<titleformat_compiler>()->compile(p_script, cfg_service_properties[this_->m_service_index].path))
+		if (!static_api_ptr_t<titleformat_compiler>()->compile(p_script, g_cfg_service_properties[this_->m_service_index].path))
 			throw std::runtime_error("Titleformat compile error!");
 
 		while (true)
@@ -144,7 +144,8 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 			metadb_handle_list_cref handle_list = this_->m_input_files->get_item(cur_job_index);
 			
 			pfc::string8 commandline;
-			if (!handle_list[0]->format_title(&title_format_hook_foo_run_group(handle_list, cur_job_index), commandline, p_script, NULL))
+			auto tmp_hook_foo_xgrp = title_format_hook_foo_run_group(handle_list, cur_job_index);
+			if (!handle_list[0]->format_title((titleformat_hook*)(&tmp_hook_foo_xgrp), commandline, p_script, NULL))
 				throw std::runtime_error("Titleformat compile error!");
 
 			STARTUPINFO si;
@@ -154,7 +155,7 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 
 			si.cb = sizeof(STARTUPINFO);
 			si.dwFlags = STARTF_USESHOWWINDOW;
-			si.wShowWindow = cfg_service_properties[this_->m_service_index].minimize_window ? SW_MINIMIZE : SW_SHOW;
+			si.wShowWindow = g_cfg_service_properties[this_->m_service_index].minimize_window ? SW_MINIMIZE : SW_SHOW;
 			pfc::stringcvt::string_os_from_utf8 commandline_converted(commandline);
 			pfc::array_t<TCHAR> commandline_mod; commandline_mod.set_size(commandline_converted.length() + 1);
 			_tcscpy_s(commandline_mod.get_ptr(), commandline_mod.get_count(), commandline_converted.get_ptr());
@@ -177,7 +178,7 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 				throw  std::logic_error("");
 			}
 
-			if (cfg_service_properties[this_->m_service_index].wait_process)
+			if (g_cfg_service_properties[this_->m_service_index].wait_process)
 			{
 				WaitForSingleObject(pi.hProcess, INFINITE);
 				DWORD exit_code = 0;
@@ -185,8 +186,11 @@ unsigned __stdcall threaded_process_callback_foo_run_group::thread_proc(void *p)
 				if (exit_code && exit_code != STILL_ACTIVE)
 				{
 					try	{
-						this_->m_popup_message += cfg_service_properties[this_->m_service_index].label;
-						this_->m_popup_message += " returned error code.\n";
+						pfc::string8 errbuff; errbuff << exit_code;
+						this_->m_popup_message += g_cfg_service_properties[this_->m_service_index].label;
+						this_->m_popup_message += " returned error code ";
+						this_->m_popup_message += errbuff;
+						this_->m_popup_message += ".\n";
 						this_->m_popup_message += "Commandline: "; this_->m_popup_message += commandline; this_->m_popup_message += "\n";
 					}
 					catch (...)	{

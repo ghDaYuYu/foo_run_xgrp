@@ -51,3 +51,18 @@ public:
 	GUID get_guid();
 	bool is_mappable_shortcut();
 };
+
+// {26FFEFC3-1012-4FBB-B9C8-502E00309EE8}
+static const GUID guid_ctx_menu_node_properties =
+{ 0x26ffefc3, 0x1012, 0x4fbb, { 0xb9, 0xc8, 0x50, 0x2e, 0x0, 0x30, 0x9e, 0xe8 } }; //1.0.6
+
+class contextmenu_item_node_prop_foo_run_group : public contextmenu_item_node_leaf
+{
+public:
+	contextmenu_item_node_prop_foo_run_group();
+	bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags, metadb_handle_list_cref p_data, const GUID& p_caller);
+	void execute(metadb_handle_list_cref p_data, const GUID& p_caller);
+	bool get_description(pfc::string_base& p_out);
+	GUID get_guid();
+	bool is_mappable_shortcut();
+};

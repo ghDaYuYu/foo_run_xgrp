@@ -4,8 +4,9 @@
 
 #include "stdafx.h"
 
-#include "foo_run_group.h"
-#include "config.h"
+#include "context_menu.h"
+#include "preferences.h"
+
 #include "my_threaded_process_callback.h"
 
 
@@ -51,9 +52,16 @@ void contextmenu_item_foo_run_group::item_execute_simple(unsigned p_index, const
 	if (p_node == pfc::guid_null)
 		return;
 
-	for (t_size i = 0, count = cfg_service_properties.get_count(); i < count; i++)
+	//pref page
+	if (p_node == guid_ctx_menu_node_properties) {
+		static_api_ptr_t<ui_control> uc;
+		uc->show_preferences(guid_preferences_page_foo_run_group);
+		return;
+	}
+	//services
+	for (t_size i = 0, count = g_cfg_service_properties.get_count(); i < count; i++)
 	{
-		if (p_node == cfg_service_properties[i].service_guid)
+		if (p_node == g_cfg_service_properties[i].service_guid)
 			g_context_command(static_cast<unsigned int>(i), p_data, p_caller);
 	}
 }
@@ -71,7 +79,7 @@ void contextmenu_item_foo_run_group::g_context_command(unsigned p_index, metadb_
 {
 	if (!p_data.get_count())
 	{
-		popup_message::g_show("No input items.\n", "Run services per group");
+		popup_message::g_show("No input items.\n", PLUGIN_NAME);
 		return;
 	}
 
@@ -79,11 +87,11 @@ void contextmenu_item_foo_run_group::g_context_command(unsigned p_index, metadb_
 	input_files.remove_duplicates();
 
 	service_ptr_t<titleformat_object> p_script;
-	pfc::string8 sort_format(cfg_service_properties[p_index].album_grouping_pattern);
+	pfc::string8 sort_format(g_cfg_service_properties[p_index].album_grouping_pattern);
 	sort_format += "|%path_sort%";
 	if (!static_api_ptr_t<titleformat_compiler>()->compile(p_script, sort_format))
 	{
-		popup_message::g_show("Titleformat compile error!\n", "Run services per group");
+		popup_message::g_show("Titleformat compile error!\n", PLUGIN_NAME);
 		return;
 	}
 
@@ -92,29 +100,28 @@ void contextmenu_item_foo_run_group::g_context_command(unsigned p_index, metadb_
 	sort_format.truncate(sort_format.length() - strlen("|%path_sort%"));
 	if (!static_api_ptr_t<titleformat_compiler>()->compile(p_script, sort_format))
 	{
-		popup_message::g_show("Titleformat compile error!\n", "Run services per group");
+		popup_message::g_show("Titleformat compile error!\n", PLUGIN_NAME);
 		return;
 	}
 
 	//Filter
-	bool apply_filter = !cfg_service_properties[p_index].filter.is_empty();
+	bool apply_filter = !g_cfg_service_properties[p_index].filter.is_empty();
 	pfc::array_t<bool> filter_result;
 	if (apply_filter)
 	{
 		try
 		{
 			static_api_ptr_t<search_filter_manager> sfm;
-			search_filter::ptr sf = sfm->create(cfg_service_properties[p_index].filter);
+			search_filter::ptr sf = sfm->create(g_cfg_service_properties[p_index].filter);
 			filter_result.set_size(input_files.get_count());
 			sf->test_multi(input_files, filter_result.get_ptr());
 		}
 		catch (...)
 		{
 			apply_filter = false;
-			console::complain("Run services per group", "Failed to apply filter!");
+			console::complain(PLUGIN_NAME, "Failed to apply filter!");
 		}
 	}
-
 
 	pfc::string8_fast current_album, temp_album;
 	metadb_handle_list list;
@@ -144,7 +151,7 @@ void contextmenu_item_foo_run_group::g_context_command(unsigned p_index, metadb_
 	}
 	uSetCurrentDirectory(fb2k_path.get_ptr());
 	
-	threaded_process::g_run_modeless(p_callback, threaded_process::flag_show_abort | threaded_process::flag_show_progress, core_api::get_main_window(), "Run services per group");
+	threaded_process::g_run_modeless(p_callback, threaded_process::flag_show_abort | threaded_process::flag_show_progress, core_api::get_main_window(), PLUGIN_NAME);
 }
 
 void contextmenu_item_foo_run_group::g_get_item_name(unsigned p_index, pfc::string_base & p_out)
@@ -152,9 +159,9 @@ void contextmenu_item_foo_run_group::g_get_item_name(unsigned p_index, pfc::stri
 	p_out = item_name[p_index];
 }
 
-const char* const contextmenu_item_foo_run_group::item_name[] = { "Run services x group" };
+const char* const contextmenu_item_foo_run_group::item_name[] = { PLUGIN_NAME };
 // {E88A49E2-9392-4B12-9B53-3924B9A56990}
-const GUID contextmenu_item_foo_run_group::item_guid[] = { 0xe88a49e2, 0x9392, 0x4b12, { 0x9b, 0x53, 0x39, 0x24, 0xb9, 0xa5, 0x69, 0x90 } }; //1.0.5
+const GUID contextmenu_item_foo_run_group::item_guid[] = { 0xe88a49e2, 0x9392, 0x4b12, { 0x9b, 0x53, 0x39, 0x24, 0xb9, 0xa5, 0x69, 0x90 } }; //1.05
 
 pfc::string8 contextmenu_item_foo_run_group::fb2k_path("");
 
@@ -164,7 +171,7 @@ contextmenu_item_node_root_popup_foo_run_group::contextmenu_item_node_root_popup
 
 bool contextmenu_item_node_root_popup_foo_run_group::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags, metadb_handle_list_cref p_data, const GUID & p_caller)
 {
-	if (!cfg_service_properties.get_count())
+	if (!g_cfg_service_properties.get_count())
 		return false;
 
 	contextmenu_item_foo_run_group::g_get_item_name(m_index, p_out);
@@ -173,12 +180,23 @@ bool contextmenu_item_node_root_popup_foo_run_group::get_display_data(pfc::strin
 
 t_size contextmenu_item_node_root_popup_foo_run_group::get_children_count()
 {
-	return cfg_service_properties.get_count();
+	return g_cfg_service_properties.get_count() + 2; //+ 1 separator + 1 preference page
 }
 
 contextmenu_item_node * contextmenu_item_node_root_popup_foo_run_group::get_child(t_size p_index)
 {
-	return new contextmenu_item_node_leaf_foo_run_group(static_cast<unsigned int>(p_index));
+	auto separator_pos = get_children_count() - 2;//- 1 separator - 1 preference page
+	if (p_index >= separator_pos) {
+		if (p_index == separator_pos) {
+			return new contextmenu_item_node_separator;
+		}
+		else {
+			return new contextmenu_item_node_prop_foo_run_group();
+		}
+	}
+	else {
+		return new contextmenu_item_node_leaf_foo_run_group(static_cast<unsigned int>(p_index));
+	}
 }
 
 GUID contextmenu_item_node_root_popup_foo_run_group::get_guid()
@@ -191,7 +209,6 @@ bool contextmenu_item_node_root_popup_foo_run_group::is_mappable_shortcut()
 	return false;
 }
 
-
 //Leaf
 contextmenu_item_node_leaf_foo_run_group::contextmenu_item_node_leaf_foo_run_group(unsigned p_index) : m_index(p_index)
 { }
@@ -199,14 +216,14 @@ contextmenu_item_node_leaf_foo_run_group::contextmenu_item_node_leaf_foo_run_gro
 bool contextmenu_item_node_leaf_foo_run_group::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags, metadb_handle_list_cref p_data, const GUID & p_caller)
 {
 	p_displayflags = 0;
-	p_out = cfg_service_properties[m_index].label;
+	p_out = g_cfg_service_properties[m_index].label;
 	return true;
 }
 
 bool contextmenu_item_node_leaf_foo_run_group::get_description(pfc::string_base & p_out)
 {
 	p_out = "Runs ";
-	p_out += cfg_service_properties[m_index].label;
+	p_out += g_cfg_service_properties[m_index].label;
 	p_out += " per group";
 	return true;
 }
@@ -218,10 +235,43 @@ void contextmenu_item_node_leaf_foo_run_group::execute(metadb_handle_list_cref p
 
 GUID contextmenu_item_node_leaf_foo_run_group::get_guid()
 {
-	return cfg_service_properties[m_index].service_guid;
+	return g_cfg_service_properties[m_index].service_guid;
 }
 
 bool contextmenu_item_node_leaf_foo_run_group::is_mappable_shortcut()
+{
+	return true;
+}
+
+//Prefs
+contextmenu_item_node_prop_foo_run_group::contextmenu_item_node_prop_foo_run_group()
+{ }
+
+bool contextmenu_item_node_prop_foo_run_group::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags, metadb_handle_list_cref p_data, const GUID& p_caller)
+{
+	p_displayflags = 0;
+	p_out = "Properties";
+	return true;
+}
+
+bool contextmenu_item_node_prop_foo_run_group::get_description(pfc::string_base& p_out)
+{
+	p_out = "Run x group properties";
+	return true;
+}
+
+void contextmenu_item_node_prop_foo_run_group::execute(metadb_handle_list_cref p_data, const GUID& p_caller)
+{
+	static_api_ptr_t<ui_control> uc;
+	uc->show_preferences(guid_preferences_page_foo_run_group);
+}
+
+GUID contextmenu_item_node_prop_foo_run_group::get_guid()
+{
+	return guid_ctx_menu_node_properties;
+}
+
+bool contextmenu_item_node_prop_foo_run_group::is_mappable_shortcut()
 {
 	return true;
 }

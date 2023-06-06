@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -96,6 +96,7 @@
       <SupportJustMyCode>false</SupportJustMyCode>
       <TreatSpecificWarningsAsErrors>4715</TreatSpecificWarningsAsErrors>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -114,8 +115,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>
-      </SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>..;../..;../../../WTL10_9163/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -124,9 +124,10 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <SupportJustMyCode>false</SupportJustMyCode>
+      <SupportJustMyCode>true</SupportJustMyCode>
       <TreatSpecificWarningsAsErrors>4715</TreatSpecificWarningsAsErrors>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -155,6 +156,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_WINDLL;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;../..;../../../WTL10_9163/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -182,6 +184,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_WINDLL;_WIN64;NDEBUG;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..;../..;../../../WTL10_9163/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -213,16 +216,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="config.rc" />
-    <ResourceCompile Include="foo_run_group_ver.rc" />
+    <ResourceCompile Include="foo_run_group.rc"/>
+    <ResourceCompile Include="foo_run_group_ver.rc"/>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="config.cpp" />
-    <ClCompile Include="foo_run_group.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="my_cfg_var.cpp" />
-    <ClCompile Include="my_threaded_process_callback.cpp" />
-    <ClCompile Include="my_titleformat_hook.cpp" />
+    <ClCompile Include="preferences.cpp"/>
+    <ClCompile Include="context_menu.cpp"/>
+    <ClCompile Include="header_static.cpp"/>
+    <ClCompile Include="main.cpp"/>
+    <ClCompile Include="main_menu_items.cpp"/>
+    <ClCompile Include="my_cfg_var.cpp"/>
+    <ClCompile Include="my_threaded_process_callback.cpp"/>
+    <ClCompile Include="my_titleformat_hook.cpp"/>
+    <ClCompile Include="service_list.cpp"/>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -235,14 +241,18 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="foo_run_group.h" />
-    <ClInclude Include="my_cfg_var.h" />
-    <ClInclude Include="my_titleformat_hook.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="my_threaded_process_callback.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="version.h" />
+    <ClInclude Include="context_menu.h"/>
+    <ClInclude Include="preferences.h"/>
+    <ClInclude Include="header_static.h"/>
+    <ClInclude Include="main_menu_items.h"/>
+    <ClInclude Include="my_cfg_var.h"/>
+    <ClInclude Include="my_titleformat_hook.h"/>
+    <ClInclude Include="resource.h"/>
+    <ClInclude Include="my_threaded_process_callback.h"/>
+    <ClInclude Include="service_list.h"/>
+    <ClInclude Include="stdafx.h"/>
+    <ClInclude Include="version.h"/>
+    <ClInclude Include="yesno_dialog.h"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
