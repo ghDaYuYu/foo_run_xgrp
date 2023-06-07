@@ -183,7 +183,7 @@ void ServiceList::RequestReorder(size_t const* order, size_t count) {
 
 	// Footer row cannot be moved
 
-	if (GetItemCount() > m_cfg_service_properties.size() || order[footerRow()] != footerRow())
+	if (GetItemCount() > m_cfg_service_properties.size() || order[footerRow()] < footerRow())
 	{
 		return;
 	}
@@ -214,6 +214,10 @@ void ServiceList::RequestReorder(size_t const* order, size_t count) {
 	// change mask reordered
 
 	this->OnItemsReordered(order, count);
+	
+	// refresh preference page state
+	
+	m_pref_owner->OnChanged();
 }
 
 void ServiceList::OnSelectionChanged(pfc::bit_array const& affected, pfc::bit_array const& status) {

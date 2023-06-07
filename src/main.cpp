@@ -13,7 +13,7 @@ FOO_RUN_XGRP_VERSION,
 "Compiled: "__DATE__ "\n"
 "fb2k SDK: "PLUGIN_FB2K_SDK"\n"
 "\n"
-PLUGIN_NAME":\n\n Executes external applications per group\n"
+PLUGIN_NAME": Executes external applications per group\n"
 "\n"
 "Inspired by Run services v1.04 developed by Florian\n\n"
 "Change log:\n\n"
