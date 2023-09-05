@@ -4,6 +4,7 @@
 
 #pragma once
 #include "resource.h"
+#include "atlframe.h"
 #include "atlddx.h"
 #include "header_static.h"
 #include "helpers/DarkMode.h"
@@ -15,7 +16,10 @@
 static constexpr GUID guid_preferences_page_foo_run_group =
 { 0x9e7539c, 0xf52d, 0x4b2f, { 0xb9, 0x6f, 0xcf, 0xc, 0x46, 0x4f, 0xaa, 0x68 } }; //1.05
 
-class CMyPreferences : public CDialogImpl<CMyPreferences>, public preferences_page_instance, public CWinDataExchange<CMyPreferences>/*, public fb2k::configStoreNotify*/ {
+class CMyPreferences : public CDialogImpl<CMyPreferences>,
+	public CDialogResize<CMyPreferences>,
+	public preferences_page_instance,
+	public CWinDataExchange<CMyPreferences> {
 
 public:
 
@@ -27,6 +31,8 @@ public:
 
 		m_staticPrefHeaderSrv.Detach();
 		m_staticPrefHeaderSrvDet.Detach();
+
+		DeleteObject(m_font);
 	}
 
 	//dialog resource ID
@@ -54,16 +60,39 @@ private:
 		COMMAND_HANDLER_EX(IDC_RELOAD_INFO, BN_CLICKED, OnBtnCheckBoxServiceClicked)
 
 		NOTIFY_HANDLER_EX(IDC_THREAD_COUNT_SPIN, UDN_DELTAPOS, OnBtnCountSpinNotifyClicked)
+		CHAIN_MSG_MAP(CDialogResize<CMyPreferences>)
 
 		MSG_WM_COMMAND(OnCommand)
 	END_MSG_MAP()
+
+
+	BEGIN_DLGRESIZE_MAP(CMyPreferences)
+		DLGRESIZE_CONTROL(IDC_SERVICE_LIST_HEADER, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_SERVICES_LIST, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_SERVICE_DETAILS_HEADER, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_LABEL, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_PATH, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_ALBUM_GROUPING_PATTERN, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_FILTER, DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDC_NEW_SERVICE, DLSZ_MOVE_X)
+		DLGRESIZE_CONTROL(IDC_REMOVE_SERVICE, DLSZ_MOVE_X)
+		DLGRESIZE_CONTROL(IDC_BROWSE_PATH, DLSZ_MOVE_X)
+		DLGRESIZE_CONTROL(IDC_MINIMIZE_WINDOW, DLSZ_MOVE_X)
+		DLGRESIZE_CONTROL(IDC_WAIT_PROCESS, DLSZ_MOVE_X)
+		DLGRESIZE_CONTROL(IDC_RELOAD_INFO, DLSZ_MOVE_X)
+	END_DLGRESIZE_MAP()
 
 	BEGIN_DDX_MAP(CMyPreferences)
 		DDX_CONTROL(IDC_SERVICE_LIST_HEADER, m_staticPrefHeaderSrv)
 		DDX_CONTROL(IDC_SERVICE_DETAILS_HEADER, m_staticPrefHeaderSrvDet)
 	END_DDX_MAP()
 
+	void DlgResize_UpdateLayout(int cxWidth, int cyHeight) {
+		CDialogResize<CMyPreferences>::DlgResize_UpdateLayout(cxWidth, cyHeight);
+	}
+
 	BOOL OnInitDialog(CWindow, LPARAM);
+	void SetThemeFont();
 
 	void OnBtnNewServiceClicked(UINT, int, CWindow);
 	void OnBtnRemoveServiceClicked(UINT, int, CWindow);
@@ -83,6 +112,7 @@ private:
 
 	// Dark mode
 	fb2k::CDarkModeHooks m_dark;
+	HFONT m_font;
 
 	HeaderStatic m_staticPrefHeaderSrv;
 	HeaderStatic m_staticPrefHeaderSrvDet;

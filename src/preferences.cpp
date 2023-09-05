@@ -18,6 +18,9 @@ cfg_service_properties_list g_cfg_service_properties(guid_cfg_service_properties
 
 BOOL CMyPreferences::OnInitDialog(CWindow, LPARAM) {
 
+	DlgResize_Init(false, true);
+	SetThemeFont();
+
 	DoDataExchange(DDX_LOAD);
 
 	m_staticPrefHeaderSrv.PaintGradientHeader();
@@ -34,6 +37,24 @@ BOOL CMyPreferences::OnInitDialog(CWindow, LPARAM) {
 	m_dark.AddDialogWithControls(*this);
 
 	return FALSE;
+}
+
+void CMyPreferences::SetThemeFont() {
+	LOGFONTW lf;
+	CWindowDC dc(core_api::get_main_window());
+	CTheme wtheme;
+	HTHEME theme = wtheme.OpenThemeData(core_api::get_main_window(), L"TEXTSTYLE");
+	GetThemeFont(theme, dc, TEXT_BODYTEXT, 0, TMT_FONT, &lf);
+	m_font = CreateFontIndirectW(&lf);
+	SetFont(m_font, true);
+
+	for (HWND walk = ::GetWindow(m_hWnd, GW_CHILD); walk != NULL; ) {
+		HWND next = ::GetWindow(walk, GW_HWNDNEXT);
+		if (::IsWindow(next)) {
+			::SendMessage(next, WM_SETFONT, (WPARAM)m_font, MAKELPARAM(1/*bRedraw*/, 0));
+		}
+		walk = next;
+	}
 }
 
 // INIT SERVICES
@@ -60,12 +81,10 @@ void CMyPreferences::init_service_properties(HWND hwndParent, t_size index, cons
 
 	if (current.wait_process)
 	{
-
 		::EnableWindow(GetDlgItem(IDC_RELOAD_INFO), TRUE);
 	}
 	else
 	{
-
 		CheckDlgButton(IDC_RELOAD_INFO, BST_UNCHECKED);
 		::EnableWindow(GetDlgItem(IDC_RELOAD_INFO), FALSE);
 	}

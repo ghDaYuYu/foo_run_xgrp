@@ -17,16 +17,6 @@ private:
 	void OnPaint(CDCHandle dcDummy);
 	void PaintGradientHeader();
 
-	void SetLeftGradientColor(COLORREF clrLeft)
-	{
-		m_clrLeft = clrLeft;
-	}
-
-	void SetRightGradientColor(COLORREF clrRight)
-	{
-		m_clrRight = clrRight;
-	}
-
 	void SetTextColor(COLORREF clrText)
 	{
 		m_clrText = clrText;
@@ -34,13 +24,9 @@ private:
 
 protected:
 	int		 m_iLeftSpacing;
-
-	COLORREF m_clrLeft;
-	COLORREF m_clrRight;
 	COLORREF m_clrText;
-
 	CFont m_newFont;
-	
+
 private:
-	void DrawGradRect(CPaintDC& dc, const CRect& r,	COLORREF clrLeft, COLORREF clrRight);
+	void DrawGradRect(CPaintDC& dc, const CRect& r, COLORREF clrLeft, COLORREF clrRight);
 };
